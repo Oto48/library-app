@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('books', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
+            $table->date('release_date');
+            $table->enum('status', ['Free', 'Busy'])->default('Free');
+            $table->json('authors'); // Column for storing authors as JSON array
             $table->timestamps();
         });
     }
