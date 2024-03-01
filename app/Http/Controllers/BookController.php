@@ -13,6 +13,45 @@ class BookController extends Controller
         return view('books.create');
     }
 
+    public function delete(Book $book)
+    {
+        $book->delete();
+    
+        return redirect()->route('home')->with('success', 'Book deleted successfully!');
+    }
+
+    public function edit(Book $book)
+    {
+        return view('books.edit', compact('book'));
+    }
+
+    public function update(Request $request, Book $book)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'release_date' => 'required|date',
+            'status' => 'required|in:Free,Busy',
+            'authors.*' => 'string|max:255', // Validate each author individually
+        ]);
+    
+        $book->update([
+            'name' => $validatedData['name'],
+            'release_date' => $validatedData['release_date'],
+            'status' => $validatedData['status'],
+            'authors' => $validatedData['authors'], // Update authors array
+        ]);
+    
+        return redirect()->route('home')->with('success', 'Book updated successfully!');
+    }
+
+    public function filter(Request $request)
+    {
+        $query = $request->get('query');
+        $books = Book::where('name', 'like', '%' . $query . '%')->get();
+    
+        return view('home', compact('books'));
+    }
+
     public function store(Request $request)
     {
         // Validate the form data
