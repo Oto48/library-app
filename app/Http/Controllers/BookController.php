@@ -47,7 +47,19 @@ class BookController extends Controller
     public function filter(Request $request)
     {
         $query = $request->get('query');
-        $books = Book::where('name', 'like', '%' . $query . '%')->get();
+        $author = $request->get('author');
+    
+        $books = Book::query();
+    
+        if ($query) {
+            $books->where('name', 'like', '%' . $query . '%');
+        }
+    
+        if ($author) {
+            $books->whereJsonContains('authors', $author);
+        }
+    
+        $books = $books->get();
     
         return view('home', compact('books'));
     }
